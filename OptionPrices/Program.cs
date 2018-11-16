@@ -25,8 +25,9 @@ namespace OptionPrices
             //Console.ReadKey();
 
             //Second Question
-            double OptionCallPrice = MyOption.CalculateImpliedVol(10,0.5, 0.001, 10000, true);
-            double OptionPutPrice = MyOption.CalculateImpliedVol(3, 0.5, 0.001, 10000, false);
+            BlackScholesImpliedVol MyOptionVol = new BlackScholesImpliedVol(InitialStockPrice, RiskFreeRate, OptionStrikePrice, OptionMaturity);
+            double OptionCallPrice = MyOptionVol.CalculateImpliedVol(10,0.5, 0.01, 10000, true);
+            double OptionPutPrice = MyOptionVol.CalculateImpliedVol(3, 0.5, 0.001, 10000, false);
             Console.WriteLine(OptionCallPrice);
             Console.WriteLine(OptionPutPrice);
             Console.ReadKey();

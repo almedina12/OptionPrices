@@ -30,23 +30,14 @@ namespace OptionPrices
         {
 
             NewtonSolver MyNewtonSolver = new NewtonSolver(tolerance, maxIterations);
+            BlackScholesFormula MyOption = new BlackScholesFormula(InitialStockPrice, RiskFreeRate, OptionStrikePrice, OptionMaturity);
             Func<double, double> SolveforSigma;
 
-            if (isCall) {
-                SolveforSigma = Sigma => InitialStockPrice * Normal.CDF(0, 1, Math.Log(InitialStockPrice / OptionStrikePrice) + 
-                    (RiskFreeRate + Math.Pow(Sigma, 2) / 2) * OptionMaturity) /(Sigma * Math.Sqrt(OptionMaturity)) - 
-                    OptionStrikePrice * Math.Exp(-RiskFreeRate * OptionMaturity) * Normal.CDF(0, 1, Math.Log(InitialStockPrice / OptionStrikePrice) + 
-                    (RiskFreeRate + Math.Pow(Sigma, 2) / 2) * OptionMaturity - Sigma * Math.Sqrt(OptionMaturity)) /
-                 (Sigma * Math.Sqrt(OptionMaturity)) - optionPrice;
-            }
+            if (isCall)
+                SolveforSigma = Sigma => MyOption.CalculateCallOptionPrice(Sigma) - optionPrice;
             else
-            {
-                SolveforSigma = Sigma => InitialStockPrice * Normal.CDF(0, 1, Math.Log(InitialStockPrice / OptionStrikePrice) +
-                    (RiskFreeRate + Math.Pow(Sigma, 2) / 2) * OptionMaturity) / (Sigma * Math.Sqrt(OptionMaturity)) -
-                    OptionStrikePrice * Math.Exp(-RiskFreeRate * OptionMaturity) * Normal.CDF(0, 1, Math.Log(InitialStockPrice / OptionStrikePrice) +
-                    (RiskFreeRate + Math.Pow(Sigma, 2) / 2) * OptionMaturity - Sigma * Math.Sqrt(OptionMaturity)) /
-                 (Sigma * Math.Sqrt(OptionMaturity)) + OptionStrikePrice * Math.Exp(-RiskFreeRate * OptionMaturity) - InitialStockPrice - optionPrice;
-            }
+                SolveforSigma = Sigma => MyOption.CalculatePutOptionPrice(Sigma) - optionPrice;
+            
             double Volatility = MyNewtonSolver.Solve(SolveforSigma, null, initialGuess);
 
             return Volatility;

@@ -6,7 +6,7 @@ namespace OptionPrices
 {
     class NewtonSolver
     {
-        private const double delta = 0.01; // for approximating partial derivatives
+        private const double delta = 0.001; // for approximating partial derivatives
         private double tol;
         private int maxIt;
 
@@ -55,13 +55,17 @@ namespace OptionPrices
             if (fPrime == null)
             {
                 double fPrim;
-                double delta = 0.1;
+                double delta = 0.00001;
                 int n = 0;
                 double xn = f(x0);
                 while (Math.Abs(f(xn)) > maxError)
                 {
                     fPrim = (f(xn + delta) - f(xn - delta)) / (2 * delta);
-                    xn = xn - f(xn) / fPrim;
+
+                    if (fPrim == 0)
+                        return xn;
+
+                        xn = xn - f(xn) / fPrim;
                     n++;
                     if (n > maxIter)
                     {
